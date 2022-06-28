@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        .table-striped>tbody>tr:nth-child(odd)>td,
+        .table-striped>tbody>tr:nth-child(odd)>th {
+            background-color: lightgray;
+            color:black;
+        }
+        .table-striped>tbody>tr:nth-child(even)>td,
+        .table-striped>tbody>tr:nth-child(even)>th {
+            background-color: #ECEFF1;
+            color:black;
+        }
+        thead{
+            background: darkslategrey; color: white;
+        }
+    </style>
+</head>
+<body style="background-color:cadetblue">
+<nav class="navbar navbar-expand-md navbar-light bg-light mb-5">
+    <div class="container-fluid">
+        <a href="#" class="navbar-brand">Систем за оценки</a>
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item" sec:authorize="isAuthenticated()"><a href="/home" class="nav-link">Лични податоци</a></li>
+                <li class="nav-item"><a href="/subjects" sec:authorize="hasRole('ADMIN')" class="nav-link">Предмети</a></li>
+                <li class="nav-item"><a href="/exams" sec:authorize="hasRole('USER')" class="nav-link">Испити</a></li>
+            </ul>
+            <a class="btn btn-success"  sec:authorize="isAnonymous()" href="/login">Login</a>
+            <a class="btn btn-primary"  sec:authorize="isAnonymous()" href="/preregister">Register</a>
+            <a class="btn btn-info" href="/logout" sec:authorize="isAuthenticated()">Одјави се</a></div>
+        </div>
+
+    </div>
+
+</nav>
+<div class="container">
+    <div class="row">
+        <div style="margin-bottom: 50px;">
+            <a th:href="@{'/add-student/{id}' (id=${subject.getId()})}"
+               class="btn btn-success">
+                <i class="fa fa-trash">Додај студент</i>
+            </a>
+        </div>
+
+        <div class="col-12" th:if="${students.size() > 0}">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Име</th>
+                        <th scope="col">Презиме</th>
+                        <th scope="col">Индекс</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="s : ${students}" class="product">
+                        <td th:text="${s.getName()}"></td>
+                        <td th:text="${s.getLastname()}"></td>
+                        <td th:text="${s.getIndex()}"></td>
+                        <td class="text-right">
+                            <th:block >
+                                <form th:action="@{'/deletestudent/{id}' (id=${s.getId()})}"
+                                      th:method="DELETE">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-danger delete-product">
+                                        <i class="fa fa-trash">Отстрани студент од предмет</i>
+                                        <input type="hidden" th:value="${subject.getId()}" name="subject">
+                                    </button>
+                                </form>
+                            </th:block>
+                            <th:block >
+                                <form th:action="@{'/examEntry/{id}' (id=${s.getId()})}"
+                                      th:method="POST">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-success">
+                                        <i class="fa fa-trash">Внеси испит</i>
+                                        <input type="hidden" th:value="${subject.getId()}" name="subject">
+
+                                    </button>
+                                </form>
+                            </th:block>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
